@@ -1,0 +1,259 @@
+{
+  "name": "Recipe RAG AI Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -80,
+        592
+      ],
+      "id": "348ab119-43c1-453c-900f-bad8d41618d0",
+      "name": "When chat message received",
+      "webhookId": "3b6f1308-60e0-45e9-bf14-2145f761c559"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "You are a helpful Recipe RAG assistant. Answer in the user's language (Danish or English). Use the Neo4j recipe knowledge base through BOTH available tools for recipe searches.\n\nMandatory retrieval sequence for recipe questions:\n1. Call vector_recipe_search first. Its query is mapped automatically from the Chat Trigger, so do not attempt to invent or supply a query parameter. The tool returns recipe IDs, titles, descriptions/text, and similarity scores from Neo4j vectordb using Ollama embeddings.\n2. Call graph_recipe_search next to inspect structured recipe facts and enforce explicit constraints. If vector results contain recipe IDs, set restrictToCandidates=true and pass those exact IDs as candidateIdsCsv (comma separated). If no vector IDs are available, use restrictToCandidates=false and candidateIdsCsv as an empty string. For requiredIngredientsCsv, give comma-separated ingredient names that the user explicitly requires (otherwise empty string). For dietaryTagsCsv, use explicitly requested dietary tags only (otherwise empty string). For maxMinutes, use the nonnegative integer time limit specified by the user; use 0 for no limit.\n3. If restricting to vector candidates gives no graph matches, optionally call graph_recipe_search again with restrictToCandidates=false to find graph-only alternatives, and clearly distinguish those alternatives.\n\nOnly recommend recipes returned by the tools. Never invent a recipe, ingredients, cook time, or dietary suitability. Prefer recipes confirmed by both search tools. Mention a title, prep time and relevant ingredients where those are present in results. If a tool fails, say what cannot be verified rather than pretending a search succeeded. If the user is not asking about recipes, answer briefly without unnecessary tool calls."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        256,
+        592
+      ],
+      "id": "94d14130-9dc1-49d1-9136-da9f8e86c09a",
+      "name": "Recipe RAG AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "qwen3.5:4b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        96,
+        880
+      ],
+      "id": "d5ce8945-d073-43a0-bb14-7f6c49289e18",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "9wZzCyK2E4i7HFh8",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('When chat message received').first().json.sessionId }}",
+        "contextWindowLength": 8
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        256,
+        880
+      ],
+      "id": "e6604418-eb21-4cea-afa4-a46bc75ad946",
+      "name": "Conversation Memory"
+    },
+    {
+      "parameters": {
+        "description": "Semantic recipe lookup in Neo4j vectordb using Ollama. Use FIRST for every recipe question. This tool automatically receives the latest user chat message as its query; you do NOT need to supply a query parameter. Returns recipe IDs, titles, text and similarity scores from workflow 02.",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Yj5C5b95jg1CE2Br",
+          "cachedResultName": "Vector Recipe Search"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "query": "={{ $('When chat message received').first().json.chatInput }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        496,
+        880
+      ],
+      "id": "ea55923c-69d0-44ac-81bb-3fa436bda2e1",
+      "name": "vector_recipe_search"
+    },
+    {
+      "parameters": {
+        "description": "Structured recipe lookup in Neo4j graphdb, workflow 03. Use AFTER vector_recipe_search to verify ingredient, dietary, and time constraints. All lists are comma-separated text at the tool-call interface and converted to arrays before calling workflow 03. If the vector search returned IDs, use restrictToCandidates=true and pass exact comma-separated recipe IDs in candidateIdsCsv. If no vector IDs, use false and empty candidateIdsCsv. Required ingredients and dietary tags may be empty. maxMinutes=0 means no limit. Returns matching recipes with relationships and instructions.",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "T0eDu17Q9kQPIRuL",
+          "cachedResultName": "Graph Recipe Search"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "restrictToCandidates": "={{ $fromAI('restrictToCandidates', 'Boolean true only when filtering to known IDs from vector_recipe_search; otherwise false.', 'boolean') }}",
+            "candidateIds": "={{ ($fromAI('candidateIdsCsv', 'Comma-separated recipe IDs returned by vector_recipe_search; empty string if none', 'string') || '').split(',').map(v => v.trim()).filter(Boolean) }}",
+            "requiredIngredients": "={{ ($fromAI('requiredIngredientsCsv', 'Comma-separated explicitly required ingredient names; empty string if none', 'string') || '').split(',').map(v => v.trim()).filter(Boolean) }}",
+            "dietaryTags": "={{ ($fromAI('dietaryTagsCsv', 'Comma-separated explicitly requested dietary tags such as vegetarian; empty string if none', 'string') || '').split(',').map(v => v.trim()).filter(Boolean) }}",
+            "maxMinutes": "={{ $fromAI('maxMinutes', 'Nonnegative integer minutes limit, or 0 if user did not specify a time limit.', 'number') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "restrictToCandidates",
+              "displayName": "restrictToCandidates",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "boolean"
+            },
+            {
+              "id": "candidateIds",
+              "displayName": "candidateIds",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "array"
+            },
+            {
+              "id": "requiredIngredients",
+              "displayName": "requiredIngredients",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "array"
+            },
+            {
+              "id": "dietaryTags",
+              "displayName": "dietaryTags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "array"
+            },
+            {
+              "id": "maxMinutes",
+              "displayName": "maxMinutes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        816,
+        880
+      ],
+      "id": "9472dd5b-0ef6-448b-8718-81eb9d77e5aa",
+      "name": "graph_recipe_search"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Recipe RAG AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Recipe RAG AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conversation Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Recipe RAG AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "vector_recipe_search": {
+      "ai_tool": [
+        [
+          {
+            "node": "Recipe RAG AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "graph_recipe_search": {
+      "ai_tool": [
+        [
+          {
+            "node": "Recipe RAG AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "926756b7-8ad8-45c3-9a56-2307dfafd308",
+  "meta": {
+    "instanceId": "5058ef014051910b8c4e229ef03883f9846c62f453e8f94acbe725c35d7d5a18"
+  },
+  "nodeGroups": [],
+  "id": "10OZMicHx6ViVKJo",
+  "tags": []
+}

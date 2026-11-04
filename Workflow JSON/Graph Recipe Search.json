@@ -1,0 +1,145 @@
+{
+  "name": "Graph Recipe Search",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "restrictToCandidates",
+              "type": "boolean"
+            },
+            {
+              "name": "candidateIds",
+              "type": "array"
+            },
+            {
+              "name": "requiredIngredients",
+              "type": "array"
+            },
+            {
+              "name": "dietaryTags",
+              "type": "array"
+            },
+            {
+              "name": "maxMinutes",
+              "type": "number"
+            }
+          ]
+        }
+      },
+      "name": "Tool inputs",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "id": "7383a6ba-e1ca-4dd2-b9bd-1f0d49cea426",
+      "position": [
+        48,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Alle filtre er valgfrie. AI-agenten kan kalde værktøjet med få eller mange filtre.\nconst input = $json;\nfunction readList(value, label) {\n  if (value == null || value === '') return [];\n  if (!Array.isArray(value) || !value.every(item => typeof item === 'string' && item.trim())) {\n    throw new Error(`${label} must be an array of nonempty strings`);\n  }\n  return [...new Set(value.map(item => item.trim()))];\n}\n\nconst restrictToCandidates = input.restrictToCandidates === true || input.restrictToCandidates === 'true';\nconst candidateIds = readList(input.candidateIds, 'candidateIds');\nconst aliases = { chickpeas: 'chickpea', 'garbanzo beans': 'chickpea', mushrooms: 'mushroom' };\nconst requiredIngredients = [...new Set(readList(input.requiredIngredients, 'requiredIngredients').map(item => {\n  const name = item.toLowerCase();\n  return Object.hasOwn(aliases, name) ? aliases[name] : name;\n}))];\nconst dietaryTags = [...new Set(readList(input.dietaryTags, 'dietaryTags').map(item => item.toLowerCase()))];\nconst maxMinutes = input.maxMinutes == null || input.maxMinutes === '' ? 0 : Number(input.maxMinutes);\nif (!Number.isInteger(maxMinutes) || maxMinutes < 0) {\n  throw new Error('maxMinutes must be a nonnegative integer (0 means no limit)');\n}\nif (restrictToCandidates && candidateIds.length === 0) {\n  throw new Error('candidateIds cannot be empty when restrictToCandidates is true');\n}\n\n// Understøtter både :graph (din oprindelige query) og det almindelige :Recipe.\nconst statement = `MATCH (r)\nWHERE (r:graph OR r:Recipe)\n  AND (NOT $restrictToCandidates OR r.id IN $candidateIds)\n  AND ($maxMinutes = 0 OR toInteger(r.minutes) <= $maxMinutes)\n  AND all(name IN $requiredIngredients WHERE EXISTS {\n    MATCH (r)-[:USES]->(i:Ingredient)\n    WHERE toLower(i.name) = name\n  })\n  AND all(name IN $dietaryTags WHERE EXISTS {\n    MATCH (r)-[:HAS_TAG]->(d:DietaryTag)\n    WHERE toLower(d.name) = name\n  })\nOPTIONAL MATCH (r)-[:USES]->(ingredient:Ingredient)\nWITH r, collect(DISTINCT ingredient.name) AS ingredients\nOPTIONAL MATCH (r)-[:HAS_TAG]->(tag:DietaryTag)\nRETURN r.id AS id, r.title AS title, r.description AS description,\n       r.instructions AS instructions, toInteger(r.minutes) AS minutes,\n       r.source AS source, ingredients, collect(DISTINCT tag.name) AS dietaryTags\nORDER BY minutes, id\nLIMIT 10`;\nreturn { json: {\n  statement,\n  parameters: { restrictToCandidates, candidateIds, requiredIngredients, dietaryTags, maxMinutes }\n} };"
+      },
+      "name": "Prepare graph query",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "id": "56943d7e-9626-4c05-89db-de4b779b1e26",
+      "position": [
+        288,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:7474/db/graphdb/query/v2",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "name": "Search Neo4j graph",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "id": "a4a1acd8-37eb-4b26-9ae7-e12c309580fa",
+      "position": [
+        528,
+        64
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "e09XtlmOaCIqXhaA",
+          "name": "Neo4j"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "if ($json.errors?.length) throw new Error(JSON.stringify($json.errors));\nconst { fields, values } = $json.data ?? {};\nif (!Array.isArray(fields) || !Array.isArray(values)) throw new Error(\"Unexpected Neo4j response\");\nreturn { json: { results: values.map(row =>\n  Object.fromEntries(fields.map((field, index) => [field, row[index]]))\n) } };"
+      },
+      "name": "Format results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "id": "0d5c74a0-615e-41c5-adce-3f4741d46eb2",
+      "position": [
+        768,
+        64
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Tool inputs": {
+      "main": [
+        [
+          {
+            "node": "Prepare graph query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare graph query": {
+      "main": [
+        [
+          {
+            "node": "Search Neo4j graph",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Neo4j graph": {
+      "main": [
+        [
+          {
+            "node": "Format results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "ffcf1894-b70f-45aa-a3e8-43de36f743e2",
+  "meta": {
+    "instanceId": "5058ef014051910b8c4e229ef03883f9846c62f453e8f94acbe725c35d7d5a18"
+  },
+  "nodeGroups": [],
+  "id": "T0eDu17Q9kQPIRuL",
+  "tags": []
+}

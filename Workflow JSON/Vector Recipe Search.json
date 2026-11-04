@@ -1,0 +1,184 @@
+{
+  "name": "Vector Recipe Search",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "query"
+            }
+          ]
+        }
+      },
+      "name": "Tool inputs",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "id": "0f5999f7-6023-4513-b2ff-637beecaf628",
+      "position": [
+        -16,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Dette workflow kaldes af AI-agenten via Call n8n Workflow Tool.\n// Forventet input: { \"query\": \"Find a vegetarian pasta\" }\nconst query = $json.query;\nif (typeof query !== 'string' || !query.trim()) {\n  throw new Error('Missing query: Send a nonempty query string when calling workflow 02 from the AI Agent. Executing this sub-workflow alone does not provide a question.');\n}\nreturn { json: { query: query.trim() } };"
+      },
+      "name": "Validate question",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "id": "1c7395bb-0c93-405e-9c5c-d36cdf6a36d3",
+      "position": [
+        224,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:11434/api/embed",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: \"nomic-embed-text:v1.5\", input: \"search_query: \" + $json.query, truncate: false }) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "name": "Embed question",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "id": "9a3db3cb-d886-4a09-a35e-3924e17d74cb",
+      "position": [
+        464,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Ollama /api/embed returnerer { embeddings: [[...]] }.\nconst embedding = $json.embeddings?.[0];\nif (!Array.isArray(embedding) || embedding.length !== 768 || !embedding.every(Number.isFinite)) {\n  throw new Error(`Ollama embedding invalid: expected 768 finite values, received ${Array.isArray(embedding) ? embedding.length : 'none'}. Check nomic-embed-text:v1.5 and workflow 01.`);\n}\nconst statement = `CALL db.index.vector.queryNodes('recipe_embeddings', 10, $embedding)\nYIELD node, score\nRETURN node.id AS id, node.title AS title, node.text AS text,\n       node.minutes AS minutes, node.source AS source, score\nORDER BY score DESC, id`;\nreturn { json: { statement, parameters: { embedding } } };"
+      },
+      "name": "Prepare vector query",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "id": "879f9fcc-e995-45da-877e-d278dde570d6",
+      "position": [
+        704,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:7474/db/vectordb/query/v2",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "name": "Search Neo4j vectors",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "id": "e1fbfa2b-b270-4bd3-a8aa-87b14f3e4ce6",
+      "position": [
+        944,
+        -64
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "e09XtlmOaCIqXhaA",
+          "name": "Neo4j"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "if ($json.errors?.length) throw new Error(JSON.stringify($json.errors));\nconst { fields, values } = $json.data ?? {};\nif (!Array.isArray(fields) || !Array.isArray(values)) throw new Error(\"Unexpected Neo4j response\");\nreturn { json: { results: values.map(row =>\n  Object.fromEntries(fields.map((field, index) => [field, row[index]]))\n) } };"
+      },
+      "name": "Format results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "id": "6f0011b2-8602-46c7-8676-06cdb7c3bc73",
+      "position": [
+        1184,
+        -64
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Tool inputs": {
+      "main": [
+        [
+          {
+            "node": "Validate question",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate question": {
+      "main": [
+        [
+          {
+            "node": "Embed question",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embed question": {
+      "main": [
+        [
+          {
+            "node": "Prepare vector query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare vector query": {
+      "main": [
+        [
+          {
+            "node": "Search Neo4j vectors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Neo4j vectors": {
+      "main": [
+        [
+          {
+            "node": "Format results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "7321c00e-13b8-45ba-b8c7-d01e420218e6",
+  "meta": {
+    "instanceId": "5058ef014051910b8c4e229ef03883f9846c62f453e8f94acbe725c35d7d5a18"
+  },
+  "nodeGroups": [],
+  "id": "Yj5C5b95jg1CE2Br",
+  "tags": []
+}

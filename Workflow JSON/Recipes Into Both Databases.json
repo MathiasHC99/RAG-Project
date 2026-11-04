@@ -1,0 +1,289 @@
+{
+  "name": "Recipes Into Both Databases",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Start ingestion",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "id": "3e4282bc-5779-4f5c-941b-a9b4015d5c1f",
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const recipes = [\n  {\n    \"id\": \"r001\",\n    \"title\": \"Creamy mushroom pasta\",\n    \"description\": \"Rich, silky and comforting pasta dinner.\",\n    \"minutes\": 20,\n    \"ingredients\": [\n      \"pasta\",\n      \"mushroom\",\n      \"oat cream\",\n      \"olive oil\"\n    ],\n    \"cuisine\": \"italian-inspired\",\n    \"dietaryTags\": [\n      \"vegan\"\n    ],\n    \"instructions\": \"Cook the pasta. Fry sliced mushrooms in olive oil, add oat cream and simmer. Toss with the pasta.\",\n    \"source\": \"synthetic:r001\",\n    \"text\": \"Creamy mushroom pasta Rich, silky and comforting pasta dinner. Ingredients: pasta, mushroom, oat cream, olive oil Cuisine: italian-inspired Dietary tags: vegan Cooking time: 20 minutes. Cook the pasta. Fry sliced mushrooms in olive oil, add oat cream and simmer. Toss with the pasta.\"\n  },\n  {\n    \"id\": \"r002\",\n    \"title\": \"Fresh chickpea salad\",\n    \"description\": \"A light salad with crunchy vegetables and bright lemon.\",\n    \"minutes\": 10,\n    \"ingredients\": [\n      \"chickpea\",\n      \"cucumber\",\n      \"tomato\",\n      \"lemon\",\n      \"olive oil\"\n    ],\n    \"cuisine\": \"mediterranean-inspired\",\n    \"dietaryTags\": [\n      \"vegan\"\n    ],\n    \"instructions\": \"Drain canned chickpeas. Dice cucumber and tomato. Toss with lemon juice and olive oil.\",\n    \"source\": \"synthetic:r002\",\n    \"text\": \"Fresh chickpea salad A light salad with crunchy vegetables and bright lemon. Ingredients: chickpea, cucumber, tomato, lemon, olive oil Cuisine: mediterranean-inspired Dietary tags: vegan Cooking time: 10 minutes. Drain canned chickpeas. Dice cucumber and tomato. Toss with lemon juice and olive oil.\"\n  },\n  {\n    \"id\": \"r003\",\n    \"title\": \"Creamy chicken rice\",\n    \"description\": \"A hearty chicken dinner with a rich cream sauce.\",\n    \"minutes\": 30,\n    \"ingredients\": [\n      \"chicken\",\n      \"rice\",\n      \"cream\"\n    ],\n    \"cuisine\": \"international\",\n    \"dietaryTags\": [],\n    \"instructions\": \"Cook the rice. Pan-fry diced chicken until cooked through, add cream and simmer. Serve over rice.\",\n    \"source\": \"synthetic:r003\",\n    \"text\": \"Creamy chicken rice A hearty chicken dinner with a rich cream sauce. Ingredients: chicken, rice, cream Cuisine: international Dietary tags: none Cooking time: 30 minutes. Cook the rice. Pan-fry diced chicken until cooked through, add cream and simmer. Serve over rice.\"\n  },\n  {\n    \"id\": \"r004\",\n    \"title\": \"Coconut chickpea curry\",\n    \"description\": \"A warming, creamy and gently spicy curry.\",\n    \"minutes\": 25,\n    \"ingredients\": [\n      \"chickpea\",\n      \"coconut milk\",\n      \"spinach\",\n      \"onion\",\n      \"curry powder\"\n    ],\n    \"cuisine\": \"indian-inspired\",\n    \"dietaryTags\": [\n      \"vegan\"\n    ],\n    \"instructions\": \"Fry chopped onion with curry powder. Add canned chickpeas and coconut milk. Simmer and stir in spinach.\",\n    \"source\": \"synthetic:r004\",\n    \"text\": \"Coconut chickpea curry A warming, creamy and gently spicy curry. Ingredients: chickpea, coconut milk, spinach, onion, curry powder Cuisine: indian-inspired Dietary tags: vegan Cooking time: 25 minutes. Fry chopped onion with curry powder. Add canned chickpeas and coconut milk. Simmer and stir in spinach.\"\n  },\n  {\n    \"id\": \"r005\",\n    \"title\": \"Smoky black bean tacos\",\n    \"description\": \"Smoky beans with crisp cabbage and lime.\",\n    \"minutes\": 18,\n    \"ingredients\": [\n      \"black bean\",\n      \"tortilla\",\n      \"cabbage\",\n      \"lime\",\n      \"smoked paprika\"\n    ],\n    \"cuisine\": \"mexican-inspired\",\n    \"dietaryTags\": [\n      \"vegan\"\n    ],\n    \"instructions\": \"Warm canned beans with smoked paprika. Fill warm tortillas and top with shredded cabbage and lime.\",\n    \"source\": \"synthetic:r005\",\n    \"text\": \"Smoky black bean tacos Smoky beans with crisp cabbage and lime. Ingredients: black bean, tortilla, cabbage, lime, smoked paprika Cuisine: mexican-inspired Dietary tags: vegan Cooking time: 18 minutes. Warm canned beans with smoked paprika. Fill warm tortillas and top with shredded cabbage and lime.\"\n  },\n  {\n    \"id\": \"r006\",\n    \"title\": \"Lemon herb couscous\",\n    \"description\": \"A fluffy, tangy side with fresh parsley.\",\n    \"minutes\": 15,\n    \"ingredients\": [\n      \"couscous\",\n      \"lemon\",\n      \"parsley\",\n      \"olive oil\"\n    ],\n    \"cuisine\": \"mediterranean-inspired\",\n    \"dietaryTags\": [\n      \"vegan\"\n    ],\n    \"instructions\": \"Prepare couscous according to the package. Fluff and mix with lemon, chopped parsley and oil.\",\n    \"source\": \"synthetic:r006\",\n    \"text\": \"Lemon herb couscous A fluffy, tangy side with fresh parsley. Ingredients: couscous, lemon, parsley, olive oil Cuisine: mediterranean-inspired Dietary tags: vegan Cooking time: 15 minutes. Prepare couscous according to the package. Fluff and mix with lemon, chopped parsley and oil.\"\n  },\n  {\n    \"id\": \"r007\",\n    \"title\": \"Tomato lentil stew\",\n    \"description\": \"A hearty tomato stew with earthy lentils.\",\n    \"minutes\": 35,\n    \"ingredients\": [\n      \"lentil\",\n      \"tomato\",\n      \"carrot\",\n      \"onion\"\n    ],\n    \"cuisine\": \"international\",\n    \"dietaryTags\": [\n      \"vegan\"\n    ],\n    \"instructions\": \"Soften diced onion and carrot. Add canned tomatoes and rinsed red lentils with water and simmer until tender.\",\n    \"source\": \"synthetic:r007\",\n    \"text\": \"Tomato lentil stew A hearty tomato stew with earthy lentils. Ingredients: lentil, tomato, carrot, onion Cuisine: international Dietary tags: vegan Cooking time: 35 minutes. Soften diced onion and carrot. Add canned tomatoes and rinsed red lentils with water and simmer until tender.\"\n  },\n  {\n    \"id\": \"r008\",\n    \"title\": \"Ginger tofu stir-fry\",\n    \"description\": \"A bright, savory dinner with crisp broccoli.\",\n    \"minutes\": 22,\n    \"ingredients\": [\n      \"tofu\",\n      \"broccoli\",\n      \"ginger\",\n      \"soy sauce\",\n      \"oil\"\n    ],\n    \"cuisine\": \"east-asian-inspired\",\n    \"dietaryTags\": [\n      \"vegan\"\n    ],\n    \"instructions\": \"Brown cubed tofu in oil. Stir-fry broccoli and ginger, then return tofu and add soy sauce.\",\n    \"source\": \"synthetic:r008\",\n    \"text\": \"Ginger tofu stir-fry A bright, savory dinner with crisp broccoli. Ingredients: tofu, broccoli, ginger, soy sauce, oil Cuisine: east-asian-inspired Dietary tags: vegan Cooking time: 22 minutes. Brown cubed tofu in oil. Stir-fry broccoli and ginger, then return tofu and add soy sauce.\"\n  },\n  {\n    \"id\": \"r009\",\n    \"title\": \"Apple cinnamon oats\",\n    \"description\": \"Warm, soft breakfast oats with sweet apple.\",\n    \"minutes\": 12,\n    \"ingredients\": [\n      \"oats\",\n      \"apple\",\n      \"cinnamon\",\n      \"water\"\n    ],\n    \"cuisine\": \"international\",\n    \"dietaryTags\": [\n      \"vegan\"\n    ],\n    \"instructions\": \"Simmer oats in water with diced apple and cinnamon until soft.\",\n    \"source\": \"synthetic:r009\",\n    \"text\": \"Apple cinnamon oats Warm, soft breakfast oats with sweet apple. Ingredients: oats, apple, cinnamon, water Cuisine: international Dietary tags: vegan Cooking time: 12 minutes. Simmer oats in water with diced apple and cinnamon until soft.\"\n  },\n  {\n    \"id\": \"r010\",\n    \"title\": \"Roasted cauliflower bowls\",\n    \"description\": \"Nutty roasted cauliflower with fluffy quinoa.\",\n    \"minutes\": 40,\n    \"ingredients\": [\n      \"cauliflower\",\n      \"quinoa\",\n      \"tahini\",\n      \"lemon\",\n      \"olive oil\"\n    ],\n    \"cuisine\": \"mediterranean-inspired\",\n    \"dietaryTags\": [\n      \"vegan\"\n    ],\n    \"instructions\": \"Roast cauliflower in olive oil at 220°C until tender. Cook quinoa and serve with tahini and lemon.\",\n    \"source\": \"synthetic:r010\",\n    \"text\": \"Roasted cauliflower bowls Nutty roasted cauliflower with fluffy quinoa. Ingredients: cauliflower, quinoa, tahini, lemon, olive oil Cuisine: mediterranean-inspired Dietary tags: vegan Cooking time: 40 minutes. Roast cauliflower in olive oil at 220°C until tender. Cook quinoa and serve with tahini and lemon.\"\n  },\n  {\n    \"id\": \"r011\",\n    \"title\": \"Peanut cucumber noodles\",\n    \"description\": \"Cold, tangy noodles with crisp cucumber.\",\n    \"minutes\": 16,\n    \"ingredients\": [\n      \"noodles\",\n      \"peanut butter\",\n      \"cucumber\",\n      \"lime\",\n      \"soy sauce\"\n    ],\n    \"cuisine\": \"east-asian-inspired\",\n    \"dietaryTags\": [\n      \"vegan\"\n    ],\n    \"instructions\": \"Cook and cool wheat noodles. Whisk peanut butter, lime and soy sauce with water. Toss with cucumber.\",\n    \"source\": \"synthetic:r011\",\n    \"text\": \"Peanut cucumber noodles Cold, tangy noodles with crisp cucumber. Ingredients: noodles, peanut butter, cucumber, lime, soy sauce Cuisine: east-asian-inspired Dietary tags: vegan Cooking time: 16 minutes. Cook and cool wheat noodles. Whisk peanut butter, lime and soy sauce with water. Toss with cucumber.\"\n  },\n  {\n    \"id\": \"r012\",\n    \"title\": \"Salmon and dill potatoes\",\n    \"description\": \"A light, herby dinner with flaky salmon.\",\n    \"minutes\": 32,\n    \"ingredients\": [\n      \"salmon\",\n      \"potato\",\n      \"dill\",\n      \"lemon\"\n    ],\n    \"cuisine\": \"nordic-inspired\",\n    \"dietaryTags\": [],\n    \"instructions\": \"Boil potatoes until tender. Bake salmon until cooked through and serve with dill and lemon.\",\n    \"source\": \"synthetic:r012\",\n    \"text\": \"Salmon and dill potatoes A light, herby dinner with flaky salmon. Ingredients: salmon, potato, dill, lemon Cuisine: nordic-inspired Dietary tags: none Cooking time: 32 minutes. Boil potatoes until tender. Bake salmon until cooked through and serve with dill and lemon.\"\n  }\n];\nreturn recipes.map(recipe => ({ json: recipe, pairedItem: { item: 0 } }));"
+      },
+      "name": "Recipe data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "id": "7b3a75ed-1bdc-4ba5-9d24-e0655bf5cf18",
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:11434/api/embed",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: \"nomic-embed-text:v1.5\", input: \"search_document: \" + $json.text, truncate: false }) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "name": "Embed recipe",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "id": "44c556c3-7d1d-48fd-b280-81d2578b352a",
+      "position": [
+        480,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const embedding = $json.embeddings?.[0];\nif (!Array.isArray(embedding) || embedding.length !== 768 || !embedding.every(Number.isFinite)) {\n  throw new Error(\"Expected 768 finite embedding values from Ollama\");\n}\n\nreturn { json: { statement: \"MERGE (r:Recipe {id: $recipe.id})\\nSET r += {title: $recipe.title, text: $recipe.text, minutes: $recipe.minutes,\\n          source: $recipe.source, embedding: $embedding, embeddingModel: $model}\\nRETURN r.id AS id\", parameters: { recipe: $(\"Recipe data\").item.json, embedding, model: \"nomic-embed-text:v1.5\" } } };"
+      },
+      "name": "Prepare vector write",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "id": "ac50c9a9-bd17-4390-91d8-4d186fdad97f",
+      "position": [
+        720,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "\thttp://host.docker.internal:7474/db/vectordb/query/v2",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "name": "Write to vectordb",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "id": "29a1aef6-3cdc-42be-9631-8069be274ca1",
+      "position": [
+        960,
+        0
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "e09XtlmOaCIqXhaA",
+          "name": "Neo4j"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "if ($json.errors?.length) throw new Error(JSON.stringify($json.errors));\nconst { fields, values } = $json.data ?? {};\nif (!Array.isArray(fields) || !Array.isArray(values)) throw new Error(\"Unexpected Neo4j response\");\nreturn { json: { results: values.map(row =>\n  Object.fromEntries(fields.map((field, index) => [field, row[index]]))\n) } };"
+      },
+      "name": "Check vector write",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "id": "5e1d88bc-38e1-4bde-adbd-74fd0f405cef",
+      "position": [
+        1200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return { json: { statement: \"\\nMERGE (r:graph {id: $recipe.id})\\nSET r += {title: $recipe.title, description: $recipe.description, minutes: $recipe.minutes,\\n          source: $recipe.source, instructions: $recipe.instructions,\\n          cuisine: $recipe.cuisine, ingredients: $recipe.ingredients, dietaryTags: $recipe.dietaryTags}\\nWITH r\\nOPTIONAL MATCH (r)-[old:USES|IN_CUISINE|HAS_TAG]->()\\nWITH r, collect(old) AS previous\\nFOREACH (rel IN previous | DELETE rel)\\nWITH r\\nMERGE (c:Cuisine {name: $recipe.cuisine})\\nMERGE (r)-[:IN_CUISINE]->(c)\\nFOREACH (name IN $recipe.ingredients |\\n  MERGE (i:Ingredient {name: name})\\n  MERGE (r)-[:USES]->(i))\\nFOREACH (name IN $recipe.dietaryTags |\\n  MERGE (d:DietaryTag {name: name})\\n  MERGE (r)-[:HAS_TAG]->(d))\\nRETURN r.id AS id, r.title AS title\\n\", parameters: { recipe: $(\"Recipe data\").item.json } } };"
+      },
+      "name": "Prepare graph write",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "id": "327f28fb-4b71-4fd8-a590-0449b9e7aab5",
+      "position": [
+        1440,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "\thttp://host.docker.internal:7474/db/graphdb/query/v2",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "name": "Write to graphdb",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "id": "41430d8c-a9e8-427d-8009-ccbfd630c0a6",
+      "position": [
+        1904,
+        0
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "e09XtlmOaCIqXhaA",
+          "name": "Neo4j"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "if ($json.errors?.length) throw new Error(JSON.stringify($json.errors));\nconst { fields, values } = $json.data ?? {};\nif (!Array.isArray(fields) || !Array.isArray(values)) throw new Error(\"Unexpected Neo4j response\");\nreturn { json: { results: values.map(row =>\n  Object.fromEntries(fields.map((field, index) => [field, row[index]]))\n) } };"
+      },
+      "name": "Check graph write",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "id": "d410e699-e7db-4c4e-a82d-80ad969dd59e",
+      "position": [
+        2144,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1664,
+        0
+      ],
+      "id": "a7e40f45-b321-40c3-8d3a-478f13a1f874",
+      "name": "Loop Over Items"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Start ingestion": {
+      "main": [
+        [
+          {
+            "node": "Recipe data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recipe data": {
+      "main": [
+        [
+          {
+            "node": "Embed recipe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embed recipe": {
+      "main": [
+        [
+          {
+            "node": "Prepare vector write",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare vector write": {
+      "main": [
+        [
+          {
+            "node": "Write to vectordb",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write to vectordb": {
+      "main": [
+        [
+          {
+            "node": "Check vector write",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check vector write": {
+      "main": [
+        [
+          {
+            "node": "Prepare graph write",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare graph write": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write to graphdb": {
+      "main": [
+        [
+          {
+            "node": "Check graph write",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Write to graphdb",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "42b6f137-ff59-459d-bd8e-2e7ea0936fa5",
+  "meta": {
+    "instanceId": "5058ef014051910b8c4e229ef03883f9846c62f453e8f94acbe725c35d7d5a18"
+  },
+  "nodeGroups": [],
+  "id": "wxlasV64DN5T0ZNk",
+  "tags": []
+}
