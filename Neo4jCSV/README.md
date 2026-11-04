@@ -37,9 +37,6 @@ Relationships: `(:graph)-[:USES]->(:Ingredient)`, `(:graph)-[:IN_CUISINE]->(:Cui
 ## Environment and index
 
 - Neo4j: `2026.10.1`
-- n8n: `2.36.7`
-- Ollama: `0.40.0`
-- Chat model: `qwen3.5:4b`
 - Embedding model: `nomic-embed-text:v1.5` (768 dimensions)
 - Databases: `vectordb` for vector search; `graphdb` for graph search
 - Vector index: `recipe_embeddings` in `vectordb`
