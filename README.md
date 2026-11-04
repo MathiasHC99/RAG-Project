@@ -17,9 +17,3 @@ A recipe assistant that combines semantic vector search with structured graph fi
 - [n8n workflow exports](./Workflow%20JSON/)
 - [Workflow screenshots](./Workflow%20Screenshots/)
 - [Recipe CSV files](./Neo4jCSV/)
-
-## Known setup notes
-
-- The ingestion workflow uses an embedded recipe array rather than reading the CSV files. The 12 embedded records currently match both CSVs; keep them synchronized if either changes.
-- Vector and graph data use separate Neo4j databases, `vectordb` and `graphdb`, on the same server as instructed by the teacher.
-- Versions, data model, and vector-index configuration are in [Neo4j data and setup](./Neo4jCSV/README.md). Ingestion and both retrieval workflows have been confirmed working.
