@@ -15,5 +15,5 @@ A recipe assistant that combines semantic vector search with structured graph fi
 - [Example questions and results](./examples/ExampleResults.md)
 - [Workflow descriptions](./docs/WorkflowDocumentation.md)
 - [n8n workflow exports](./Workflow%20JSON/)
-- [Workflow screenshots](./Workflow%20Screenshots/)
+- [Workflow screenshots](./Screenshots/)
 - [Recipe CSV files](./Neo4jCSV/)
