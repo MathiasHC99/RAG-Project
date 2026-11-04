@@ -17,7 +17,7 @@
 | `vector_recipe_search` | `query` (user's question) | Embeds the question and returns recipe candidates with IDs, text, sources, and similarity scores. Call first. |
 | `graph_recipe_search` | Candidate IDs, required ingredients, dietary tags, and maximum minutes | Filters graph facts and verifies explicit requirements. Call after vector search. Empty filters are allowed; `maxMinutes: 0` means no limit. |
 
-The agent connects to the Ollama chat model, conversation memory, and both retrieval tools. See the [workflow overview](./Workflow%20Screenshots/AI%20agent.png) and [agent execution trace](./Workflow%20Screenshots/Agent%20tool%20connections.png).
+The agent connects to the Ollama chat model, conversation memory, and both retrieval tools. See the [workflow overview](./Screenshots/AI%20agent.png) and [agent execution trace](./Screenshots/Agent%20tool%20connections.png).
 
 The three example user prompts used to exercise the agent are documented in [Example results](./examples/ExampleResults.md).
 

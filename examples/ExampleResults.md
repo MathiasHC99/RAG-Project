@@ -22,7 +22,7 @@ Top result `r001`: creamy mushroom pasta with pasta, mushroom, oat cream, and ol
 
 **Graph tool input:**
 
-Screenshot: [Question 1 graph tool input](../Workflow%20Screenshots/Question%201%20graph%20tool%20input.png)
+Screenshot: [Question 1 graph tool input](../Screenshots/Question%201%20graph%20tool%20input.png)
 
 ```text
 restrictToCandidates: true
@@ -87,7 +87,7 @@ All six graph results were tagged vegan.
 
 **Graph tool input:**
 
-Screenshot: [Question 2 graph tool input](../Workflow%20Screenshots/Question%202%20graph%20tool%20input.png)
+Screenshot: [Question 2 graph tool input](../Screenshots/Question%202%20graph%20tool%20input.png)
 
 ```text
 restrictToCandidates: true
@@ -138,7 +138,7 @@ maxMinutes: 30
 
 **Graph tool input:**
 
-Screenshot: [Question 3 graph tool input](../Workflow%20Screenshots/Question%203%20graph%20tool%20input.png)
+Screenshot: [Question 3 graph tool input](../Screenshots/Question%203%20graph%20tool%20input.png)
 
 ```text
 restrictToCandidates: true
@@ -164,5 +164,4 @@ maxMinutes: 0 (no limit)
 > If you'd like more recipes with either meat or potatoes separately, I'd be happy to search for those!
 
 **Assessment:** Both searches returned `r012`, which contains salmon and potatoes. Salmon is fish, not meat in the usual culinary meaning, so this is not a confirmed match for “meat and potatoes.” The answer should describe it as a fish alternative rather than the requested meat recipe.
-
 

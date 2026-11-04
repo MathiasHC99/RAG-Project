@@ -43,7 +43,7 @@ Relationships: `(:graph)-[:USES]->(:Ingredient)`, `(:graph)-[:IN_CUISINE]->(:Cui
 
 The index is `ONLINE`, 100% populated, and indexes `Recipe.embedding` with 768 dimensions. Its configuration uses cosine similarity, search expansion factor `3.0`, HNSW `m: 16`, construction factor `100`, and binary quantization.
 
-Screenshot: [Neo4j vector index](../Workflow%20Screenshots/Neo4j%20vector%20index.png) and [index definition](../Workflow%20Screenshots/Neo4j%20vector%20index%20definition.png).
+Screenshot: [Neo4j vector index](../Screenshots/Neo4j%20vector%20index.png) and [index definition](../Screenshots/Neo4j%20vector%20index%20definition.png).
 
 Neo4j-reported index creation statement (`SHOW INDEXES` → `createStatement`):
 
@@ -58,4 +58,3 @@ ON (n.`embedding`) OPTIONS {indexConfig: {
   `vector.similarity_function`: 'COSINE'
 }}
 ```
-
