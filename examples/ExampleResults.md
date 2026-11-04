@@ -168,6 +168,4 @@ maxMinutes: 0 (no limit)
 
 **Assessment:** Both searches returned `r012`, which contains salmon and potatoes. Salmon is fish, not meat in the usual culinary meaning, so this is not a confirmed match for “meat and potatoes.” The answer should describe it as a fish alternative rather than the requested meat recipe.
 
-## Evidence note
 
-The graph tool input screenshots are included for all three questions. The exact tool output is summarized above; see the n8n execution logs for full execution details.
