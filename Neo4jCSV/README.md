@@ -4,8 +4,6 @@
 
 - [`recipes-graph.csv`](./recipes-graph.csv): structured recipe fields.
 - [`recipes-vector.csv`](./recipes-vector.csv): text used for semantic search.
-- Both files contain 12 sample recipes. The `source` values identify them as synthetic.
-- In the graph CSV, `ingredients` and `dietaryTags` are pipe-delimited lists.
 
 ## Data model in the ingestion workflow
 
@@ -23,7 +21,7 @@ Relationships: `(:graph)-[:USES]->(:Ingredient)`, `(:graph)-[:IN_CUISINE]->(:Cui
 
 ## Rebuild notes
 
-1. Start Neo4j, n8n, and Ollama; configure credentials in n8n only.
+1. Start Neo4j, n8n, and Ollama; configure credentials in n8n.
 2. Ensure the `graphdb` and `vectordb` databases exist on the same Neo4j server. With admin access, create missing databases from the `system` database:
 
    ```cypher
@@ -64,4 +62,3 @@ ON (n.`embedding`) OPTIONS {indexConfig: {
 }}
 ```
 
-**Verification:** The user confirmed that ingestion and both vector and graph searches work successfully.
