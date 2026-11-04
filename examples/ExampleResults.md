@@ -1,7 +1,4 @@
 # Example results
-
-The tables summarize all vector results. Graph results include the matching recipes returned by the structured search. Sources use the `synthetic:` prefix.
-
 ## Question 1 — Creamy mushroom pasta
 
 **Question:** “Give me a creamy pasta and mushroom recipe”
@@ -50,7 +47,7 @@ maxMinutes: 0 (no limit)
 >
 > This is a comforting Italian-inspired dish that combines creamy oat milk sauce with earthy mushrooms over pasta. It's perfect for a quick, vegan-friendly dinner!
 
-**Assessment:** Both searches returned `r001`, and the graph confirmed its ingredients and dietary tag. The data is synthetic.
+**Assessment:** Both searches returned `r001`, and the graph confirmed its ingredients and dietary tag.
 
 
 
@@ -86,7 +83,7 @@ maxMinutes: 0 (no limit)
 | r008 | Ginger tofu stir-fry | 22 | tofu, broccoli, ginger, soy sauce, oil | `synthetic:r008` |
 | r004 | Coconut chickpea curry | 25 | chickpea, coconut milk, spinach, onion, curry powder | `synthetic:r004` |
 
-All six graph results were tagged vegan. The graph data does not have a one-pot property.
+All six graph results were tagged vegan.
 
 **Graph tool input:**
 
