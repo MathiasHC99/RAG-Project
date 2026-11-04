@@ -19,7 +19,7 @@
 
 Relationships: `(:graph)-[:USES]->(:Ingredient)`, `(:graph)-[:IN_CUISINE]->(:Cuisine)`, and `(:graph)-[:HAS_TAG]->(:DietaryTag)`.
 
-The vector retrieval workflow expects an index named `recipe_embeddings` and 768-dimensional embeddings. Vector and graph data are stored in separate Neo4j databases, `vectordb` and `graphdb`, on the same Neo4j server, as instructed by the teacher.
+
 
 ## Rebuild notes
 
@@ -35,7 +35,6 @@ The vector retrieval workflow expects an index named `recipe_embeddings` and 768
 4. Import and run [Recipes Into Both Databases](../Workflow%20JSON/Recipes%20Into%20Both%20Databases.json).
 5. Verify graph nodes/relationships in `graphdb`, and vector nodes/embeddings plus an `ONLINE` index in `vectordb`.
 
-**Important:** The workflow uses an embedded recipe array, not these CSV files. All 12 current workflow records were checked against both CSVs and match. Keep them synchronized if either data source changes.
 
 ## Environment and index
 
